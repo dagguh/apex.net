@@ -17,7 +17,7 @@ body {
 }
 
 .currencies {
-    background-color: gold;
+    background-color: beige;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -26,13 +26,38 @@ body {
     height: 20%;
 }
 
-.grip {
+.runner-piles {
     background-color: lightcoral;
     position: absolute;
     bottom: 0;
     left: 0;
     width: 50%;
     height: 40%;
+}
+
+.stack-heap-container {
+    background-color: aquamarine;
+    position: absolute;
+    left: 0;
+    width: 9.5%;
+    height: 100%;
+    padding: 0.2em;
+}
+
+.stack-heap-container img {
+    width: 100%;
+}
+
+.heap {
+    /*transform: rotate(-90deg);*/
+}
+
+.grip {
+    display: flex;
+    flex-direction: row-reverse;
+    position: absolute;
+    right: 0;
+    height: 100%;
 }
 
 .grip img {
@@ -63,7 +88,7 @@ body {
 }
 
 .installed {
-    margin: 4px;
+    margin: 0.2em;
 }
 
 .installed img {
