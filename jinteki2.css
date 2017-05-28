@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+}
+
+.board {
+    background-color: dimgrey;
+    height: 100vh;
+}
+
+.active-effect {
+    background-color: wheat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 40%;
+}
+
+.currencies {
+    background-color: gold;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    width: 50%;
+    height: 20%;
+}
+
+.grip {
+    background-color: lightcoral;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 40%;
+}
+
+.grip img {
+    height: 100%;
+}
+
+.servers {
+    background-color: slategrey;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+}
+
+.rig {
+    background-color: darkslategrey;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+}
+
+.rig > * {
+    height: 33%;
+    display: flex;
+}
+
+.installed {
+    margin: 4px;
+}
+
+.installed img {
+    width: 100%;
+}
+
+.program img {
+    clip-path: inset(0 0 49.9% 0);
+}
+
+.hardware img {
+    clip-path: inset(0 0 45% 0);
+}
+
+.resource img {
+    clip-path: inset(0 0 55% 0);
+}
