@@ -1,44 +1,48 @@
-(function startGame(document) {
+(function drawBoard(window) {
+    var board = new Konva.Stage({
+        container: '.board',
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+    var rig = new Konva.Layer({});
 
-    function Program(imageUrl) {
-        this.install = function installProgram(rig) {
-            installInRig("program", rig, ".program-zone", imageUrl)
+    board.add(rig);
+
+    function Program(dbId) {
+        this.install = function install(layer) {
+            var card = new Konva.Group({
+                clip: {
+                    x: 0,
+                    y: 0,
+                    width: 300,
+                    height: 212
+                },
+                draggable: true
+            });
+
+            var image = new Image();
+            image.onload = function drawImage() {
+                var raster = new Konva.Image({
+                    image: image,
+                    width: image.width,
+                    height: image.height
+                });
+                card.add(raster);
+                layer.add(card);
+                card.draw();
+            };
+            card.on(
+              "mouseover",
+                function zoom() {
+                    card.moveToTop();
+                    card.draw();
+                }
+            );
+            image.src = ("https://netrunnerdb.com/card_image/" + dbId + ".png");
         }
     }
 
-    function Hardware(imageUrl) {
-        this.install = function installHardware(rig) {
-            installInRig("hardware", rig, ".hardware-zone", imageUrl)
-        }
-    }
+    new Program(13006).install(rig);
+    new Program(10005).install(rig);
 
-    function Resource(imageUrl) {
-        this.install = function installResource(rig) {
-            installInRig("resource", rig, ".resource-zone", imageUrl)
-        }
-    }
-
-    function installInRig(type, rig, rowSelector, imageUrl) {
-        var row = rig.querySelector(rowSelector);
-        var installation = document.createElement("div");
-        installation.classList.add("installed");
-        var card = document.createElement("div");
-        card.classList.add(type);
-        var image = document.createElement("img");
-        image.setAttribute("src", imageUrl);
-        card.appendChild(image);
-        installation.appendChild(card);
-        row.appendChild(installation);
-    }
-
-    var rig = document.querySelector(".rig");
-
-    new Program("https://netrunnerdb.com/card_image/13006.png").install(rig);
-    new Program("https://netrunnerdb.com/card_image/10005.png").install(rig);
-    new Hardware("https://netrunnerdb.com/card_image/01024.png").install(rig);
-    new Resource("https://netrunnerdb.com/card_image/05048.png").install(rig);
-
-    document.querySelector(".spy-camera").onclick = function installSpyCamera() {
-        new Hardware("https://netrunnerdb.com/card_image/10042.png").install(rig);
-    }
-})(document);
+})(window);
