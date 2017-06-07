@@ -59,6 +59,7 @@
         });
 
         this.install = function install(rig) {
+            rig.installProgram(program);
             var image = new Image();
             image.onload = function drawImage() {
                 var raster = new Konva.Image({
@@ -67,7 +68,7 @@
                     height: image.height
                 });
                 program.group.add(raster);
-                rig.installProgram(program);
+                program.group.draw();
             };
             program.group.on(
                 "mouseover",
