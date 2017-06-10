@@ -19,25 +19,25 @@
         board.add(group);
         group.draw();
 
-        var programs = [];
+        var cards = [];
 
-        this.installProgram = function install(program) {
-            programs.push(program);
-            function sumWidths(totalWidth, program) {
-                return totalWidth + program.sourceWidth;
+        this.installCard = function install(card) {
+            cards.push(card);
+            function sumWidths(totalWidth, card) {
+                return totalWidth + card.sourceWidth;
             }
 
-            group.add(program.group);
-            var rowScale = group.width() / programs.reduce(sumWidths, 0);
-            var installedProgramsDrawn = 0;
-            programs.forEach(
-                function rescaleInstalledPrograms(installedProgram) {
-                    installedProgram.group.scale({
+            group.add(card.group);
+            var rowScale = group.width() / cards.reduce(sumWidths, 0);
+            var cardsDrawn = 0;
+            cards.forEach(
+                function rescaleCards(card) {
+                    card.group.scale({
                         x: rowScale,
                         y: rowScale
                     });
-                    installedProgram.group.x(installedProgramsDrawn * program.sourceWidth * rowScale);
-                    installedProgramsDrawn++;
+                    card.group.x(cardsDrawn * card.sourceWidth * rowScale);
+                    cardsDrawn++;
                 }
             );
             board.draw();
@@ -45,21 +45,33 @@
     }
 
     function Program(dbId) {
-        var program = this;
-        this.sourceWidth = 300;
-        this.sourceHeight = 212;
+        this.card = new Card(dbId, 300, 212)
+    }
+
+    function Hardware(dbId) {
+        this.card = new Card(dbId, 300, 230)
+    }
+
+    function Resource(dbId) {
+        this.card = new Card(dbId, 300, 195)
+    }
+
+    function Card(dbId, sourceWidth, sourceHeight) {
+        var self = this;
+        this.sourceWidth = sourceWidth;
+        this.sourceHeight = sourceHeight;
         this.group = new Konva.Group({
             clip: {
                 x: 0,
                 y: 0,
-                width: program.sourceWidth,
-                height: program.sourceHeight
+                width: self.sourceWidth,
+                height: self.sourceHeight
             },
             draggable: true
         });
 
         this.install = function install(rig) {
-            rig.installProgram(program);
+            rig.installCard(self);
             var image = new Image();
             image.onload = function drawImage() {
                 var raster = new Konva.Image({
@@ -67,22 +79,25 @@
                     width: image.width,
                     height: image.height
                 });
-                program.group.add(raster);
-                program.group.draw();
+                self.group.add(raster);
+                self.group.draw();
             };
-            program.group.on(
+            self.group.on(
                 "mouseover",
                 function zoom() {
-                    program.group.moveToTop();
-                    program.group.draw();
+                    self.group.moveToTop();
+                    self.group.draw();
                 }
             );
-            image.src = "https://netrunnerdb.com/card_image/" + dbId + ".png";
+            image.src = "images/" + dbId + ".png";
         }
     }
 
-    new Program("13006").install(rig);
-    new Program("10005").install(rig);
-    new Program("01028").install(rig);
+    new Program("13006").card.install(rig);
+    new Program("10005").card.install(rig);
+    new Program("01028").card.install(rig);
+    new Hardware("01024").card.install(rig);
+    new Hardware("02085").card.install(rig);
+    new Resource("05048").card.install(rig);
 
 })(window);
