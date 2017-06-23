@@ -7,46 +7,91 @@
     var board = new Konva.Layer({});
 
     stage.add(board);
-    var rig = new Rig(board);
 
     function Rig(board) {
-        this.programs = new Row(board);
-        this.hardware = new Row(board);
-        this.resources = new Row(board);
-    }
+        var self = this;
 
-    function Row(board) {
+        var scale = 0.75;
+
         var group = new Konva.Group({
-            x: board.width() / 2,
-            y: board.height() / 2,
-            width: board.width() / 2,
-            height: board.height() / 2
+            x: board.width() * (1 - scale),
+            y: board.height() * (1 - scale),
+            width: board.width() * scale,
+            height: board.height() * scale
         });
         board.add(group);
-        group.draw();
+
+        var rows = [];
+
+        this.totalSourceHeight = function totalSourceHeight() {
+            return rows.reduce(
+                function sumHeights(currentTotal, nextRow) {
+                    return currentTotal + nextRow.maxSourceHeight();
+                },
+                0
+            );
+        };
+
+        function addRow(name) {
+            var row = new Row(name, group, rows.slice(), self);
+            rows.push(row);
+            return row;
+        }
+
+        this.programs = addRow("programs");
+        this.hardware = addRow("hardware");
+        this.resources = addRow("resources");
+
+        this.draw = function draw() {
+            rows.forEach(
+                function drawRow(row) {
+                    row.draw();
+                }
+            );
+            board.draw();
+        }
+    }
+
+    function Row(name, group, rowsAbove, rig) {
+        var self = this;
+
+        this.name = name;
+        this.rowsAbove = rowsAbove;
 
         var cards = [];
 
+        this.maxSourceHeight = function maxSourceHeight() {
+            return cards.reduce(
+                function maximizeHeight(currentMax, card) {
+                    return Math.max(currentMax, card.sourceHeight);
+                },
+                0
+            );
+        };
+
         this.installCard = function install(card) {
             cards.push(card);
+            group.add(card.group);
+            rig.draw();
+        };
 
-            var totalWidth = cards.reduce(
+        this.draw = function draw() {
+            var totalSourceWidth = cards.reduce(
                 function sumWidths(totalWidth, card) {
                     return totalWidth + card.sourceWidth;
                 },
                 0
             );
 
-            var maxHeight = cards.reduce(
-                function maximizeHeight(currentMax, card) {
-                    return Math.max(currentMax, card.sourceHeight);
+            var heightOfRowsAbove = self.rowsAbove.reduce(
+                function maximizeHeight(currentMax, row) {
+                    return Math.max(currentMax, row.maxSourceHeight());
                 },
                 0
             );
 
-            group.add(card.group);
-            var xScale = group.width() / totalWidth;
-            var yScale = group.height() / maxHeight;
+            var xScale = group.width() / totalSourceWidth;
+            var yScale = self.maxSourceHeight() / rig.totalSourceHeight();
             var scale = Math.min(xScale, yScale);
             var cardsDrawn = 0;
             cards.forEach(
@@ -55,13 +100,13 @@
                         x: scale,
                         y: scale
                     });
-                    card.group.x(cardsDrawn * card.sourceWidth * xScale);
+                    card.group.x(cardsDrawn * card.sourceWidth * scale);
+                    card.group.y(heightOfRowsAbove * scale);
                     card.draw();
                     cardsDrawn++;
                 }
             );
-            board.draw();
-        }
+        };
     }
 
     function Program(dbId) {
@@ -102,6 +147,25 @@
             draggable: true
         });
 
+        var box = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: self.sourceWidth,
+            height: self.sourceHeight,
+            fill: 'darkslateblue',
+            stroke: 'black',
+            strokeWidth: 4
+        });
+        var label = new Konva.Text({
+            x: 5,
+            y: 5,
+            text: "Card " + dbId,
+            fontSize: 30,
+            fill: 'white'
+        });
+        this.group.add(box);
+        this.group.add(label);
+
         this.draw = function draw() {
             var image = new Image();
             image.onload = function drawImage() {
@@ -124,11 +188,13 @@
         }
     }
 
+    var rig = new Rig(board);
     new Program("13006").install(rig);
     new Program("10005").install(rig);
     new Program("01028").install(rig);
     new Hardware("01024").install(rig);
     new Hardware("02085").install(rig);
     new Resource("05048").install(rig);
+    new Program("11024").install(rig);
 
 })(window);
