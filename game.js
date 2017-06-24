@@ -84,8 +84,8 @@
             );
 
             var heightOfRowsAbove = self.rowsAbove.reduce(
-                function maximizeHeight(currentMax, row) {
-                    return Math.max(currentMax, row.maxSourceHeight());
+                function sumRowHeight(currentMax, row) {
+                    return currentMax + row.maxSourceHeight();
                 },
                 0
             );
