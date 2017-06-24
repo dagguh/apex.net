@@ -103,9 +103,8 @@
                 0
             );
 
-            var rowHeightProportion = self.maxSourceHeight() / rig.totalSourceHeight();
             var xScale = group.width() / totalSourceWidth;
-            var yScale = rowHeightProportion * group.height() / self.maxSourceHeight();
+            var yScale =  group.height() / rig.totalSourceHeight();
             var scale = Math.min(xScale, yScale);
             var cardsDrawn = 0;
             cards.forEach(
