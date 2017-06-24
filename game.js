@@ -20,6 +20,12 @@
             height: board.height() * scale
         });
         board.add(group);
+        var box = new Konva.Rect({
+            width: group.width(),
+            height: group.height(),
+            fill: '#093624'
+        });
+        group.add(box);
 
         var rows = [];
 
