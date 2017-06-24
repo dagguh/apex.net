@@ -49,7 +49,14 @@
                 }
             );
             board.draw();
-        }
+        };
+
+        group.on(
+            "click",
+            function installDummyCard() {
+                new Hardware("10042").install(self);
+            }
+        );
     }
 
     function Row(name, group, rowsAbove, rig) {
