@@ -88,24 +88,30 @@
             rig.draw();
         };
 
-        this.draw = function draw() {
+        this.fitScale = function fitScale() {
             var totalSourceWidth = cards.reduce(
                 function sumWidths(totalWidth, card) {
                     return totalWidth + card.sourceWidth;
                 },
                 0
             );
+            var xScale = group.width() / totalSourceWidth;
+            var yScale = group.height() / rig.totalSourceHeight();
+            return Math.min(xScale, yScale);
+        };
 
-            var heightOfRowsAbove = self.rowsAbove.reduce(
+        this.effectiveHeight = function effectiveHeight() {
+            return self.fitScale() * self.maxSourceHeight();
+        };
+
+        this.draw = function draw() {
+            var scale = self.fitScale();
+            var effectiveHeightOfRowsAbove = self.rowsAbove.reduce(
                 function sumRowHeight(currentMax, row) {
-                    return currentMax + row.maxSourceHeight();
+                    return currentMax + row.effectiveHeight();
                 },
                 0
             );
-
-            var xScale = group.width() / totalSourceWidth;
-            var yScale =  group.height() / rig.totalSourceHeight();
-            var scale = Math.min(xScale, yScale);
             var cardsDrawn = 0;
             cards.forEach(
                 function rescaleCards(card) {
@@ -114,7 +120,7 @@
                         y: scale
                     });
                     card.group.x(cardsDrawn * card.sourceWidth * scale);
-                    card.group.y(heightOfRowsAbove * scale);
+                    card.group.y(effectiveHeightOfRowsAbove);
                     card.draw();
                     cardsDrawn++;
                 }
